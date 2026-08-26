@@ -21,7 +21,7 @@ const navItems = [
 export default function Navbar() {
   const pathname = usePathname()
   const [open, setOpen] = useState(false)
-  const [now, setNow] = useState<string>("")
+  const [now, setNow] = useState("")
 
   useEffect(() => {
     const fmt = () =>
@@ -37,59 +37,54 @@ export default function Navbar() {
     return () => clearInterval(t)
   }, [])
 
+  const linkCls = (active: boolean) =>
+    `border-b-2 pb-4 pt-[22px] -mt-[22px] text-[13px] transition-colors ${
+      active
+        ? "border-gold text-paper font-medium"
+        : "border-transparent text-mist hover:text-paper"
+    }`
+
   return (
-    <nav className="sticky top-0 z-50 border-b border-white/[0.06] bg-[#0b1220]/80 backdrop-blur-xl">
-      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-4 px-4">
-        <Link href="/" className="group flex items-center gap-3">
-          <span className="relative flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-500 to-cyan-400 shadow-lg shadow-indigo-500/30">
-            <svg viewBox="0 0 24 24" className="h-5 w-5 text-white" fill="none" stroke="currentColor" strokeWidth="2">
+    <nav className="sticky top-0 z-50 border-b border-line bg-ink">
+      <div className="mx-auto flex h-14 max-w-7xl items-center justify-between gap-6 px-4">
+        <Link href="/" className="flex shrink-0 items-center gap-2.5">
+          <span className="flex h-7 w-7 items-center justify-center rounded-md bg-gold">
+            <svg viewBox="0 0 24 24" className="h-4 w-4 text-white" fill="none" stroke="currentColor" strokeWidth="2.2">
               <path d="M12 2l8 3v6c0 5-3.5 8.5-8 11-4.5-2.5-8-6-8-11V5l8-3z" />
-              <path d="M9 12l2 2 4-4" />
             </svg>
           </span>
-          <span className="font-display text-lg font-bold tracking-tight text-paper">
-            Mule<span className="text-indigo-400">Shield</span>
+          <span className="text-[15px] font-semibold tracking-tight text-paper">MuleShield</span>
+          <span className="tick-mark hidden rounded border border-line px-1.5 py-0.5 text-[10px] text-faint sm:inline">
+            v2.0
           </span>
         </Link>
 
-        <div className="hidden items-center gap-1 lg:flex">
-          {navItems.slice(0, 6).map((item) => {
-            const active = pathname === item.href
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                className={`rounded-full px-3.5 py-1.5 text-[13px] font-medium transition-colors ${
-                  active ? "bg-indigo-500/15 text-indigo-300" : "text-mist hover:text-paper"
-                }`}
-              >
-                {item.label}
-              </Link>
-            )
-          })}
+        <div className="hidden items-center gap-5 lg:flex">
+          {navItems.slice(0, 6).map((item) => (
+            <Link key={item.href} href={item.href} className={linkCls(pathname === item.href)}>
+              {item.label}
+            </Link>
+          ))}
         </div>
 
-        <div className="hidden items-center gap-4 xl:flex">
-          {navItems.slice(6).map((item) => {
-            const active = pathname === item.href
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                className={`text-[13px] font-medium transition-colors ${
-                  active ? "text-indigo-300" : "text-mist hover:text-paper"
-                }`}
-              >
-                {item.label}
-              </Link>
-            )
-          })}
-          <span className="h-4 w-px bg-white/10" />
-          <span className="tick-mark text-xs font-medium text-cyan-300">{now} IST</span>
+        <div className="hidden items-center gap-5 xl:flex">
+          {navItems.slice(6).map((item) => (
+            <Link key={item.href} href={item.href} className={linkCls(pathname === item.href)}>
+              {item.label}
+            </Link>
+          ))}
+        </div>
+
+        <div className="hidden shrink-0 items-center gap-3 lg:flex">
+          <span className="h-4 w-px bg-line" />
+          <span className="flex items-center gap-2">
+            <span className="status-dot bg-safe pulse-glow" />
+            <span className="tick-mark text-xs text-faint">{now} IST</span>
+          </span>
         </div>
 
         <button
-          className="text-lg text-mist xl:hidden"
+          className="text-lg text-mist lg:hidden"
           onClick={() => setOpen(!open)}
           aria-label="Toggle menu"
           aria-expanded={open}
@@ -99,8 +94,8 @@ export default function Navbar() {
       </div>
 
       {open && (
-        <div className="border-t border-white/[0.06] bg-[#0d1526] px-4 py-3 xl:hidden">
-          <div className="grid gap-1">
+        <div className="border-t border-line bg-panel px-4 py-3 lg:hidden">
+          <div className="grid gap-0.5">
             {navItems.map((item) => {
               const active = pathname === item.href
               return (
@@ -108,8 +103,8 @@ export default function Navbar() {
                   key={item.href}
                   href={item.href}
                   onClick={() => setOpen(false)}
-                  className={`rounded-xl px-4 py-2.5 text-sm font-medium ${
-                    active ? "bg-indigo-500/15 text-indigo-300" : "text-mist hover:bg-white/5"
+                  className={`rounded-md px-3 py-2.5 text-sm ${
+                    active ? "bg-raised text-paper font-medium" : "text-mist hover:bg-raised"
                   }`}
                 >
                   {item.label}

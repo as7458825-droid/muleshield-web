@@ -1,19 +1,19 @@
 const levelMeta: Record<string, { dot: string; pill: string }> = {
-  Low: { dot: "bg-emerald-400", pill: "bg-emerald-400/10 text-emerald-300 border-emerald-400/30" },
-  Medium: { dot: "bg-amber-400", pill: "bg-amber-400/10 text-amber-300 border-amber-400/30" },
-  High: { dot: "bg-rose-400", pill: "bg-rose-400/10 text-rose-300 border-rose-400/30" },
-  Critical: { dot: "bg-rose-500", pill: "bg-rose-500/15 text-rose-300 border-rose-500/40" },
+  Low: { dot: "bg-safe", pill: "bg-safe/[0.08] text-[#3ddba0] border-safe/25" },
+  Medium: { dot: "bg-warn", pill: "bg-warn/[0.08] text-[#f8cd6b] border-warn/25" },
+  High: { dot: "bg-alert", pill: "bg-alert/[0.08] text-[#ff7a89] border-alert/25" },
+  Critical: { dot: "bg-alert pulse-glow", pill: "bg-alert/15 text-[#ff8a97] border-alert/40" },
 }
 
 export default function RiskBadge({ level, score }: { level: string; score?: number }) {
-  const meta = levelMeta[level] || { dot: "bg-slate-400", pill: "bg-slate-400/10 text-slate-300 border-slate-400/30" }
+  const meta = levelMeta[level] || { dot: "bg-faint", pill: "bg-white/[0.04] text-mist border-line" }
   return (
     <span
-      className={`inline-flex items-center gap-2 rounded-full border px-3 py-1 text-xs font-semibold ${meta.pill}`}
+      className={`tick-mark inline-flex items-center gap-1.5 rounded-md border px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wide ${meta.pill}`}
     >
-      <span className={`status-dot ${meta.dot} ${level === "Critical" ? "pulse-glow" : ""}`} />
+      <span className={`status-dot h-1.5 w-1.5 ${meta.dot}`} />
       {level}
-      {score !== undefined && <span className="opacity-70">{(score * 100).toFixed(1)}%</span>}
+      {score !== undefined && <span className="font-normal opacity-70">{(score * 100).toFixed(1)}</span>}
     </span>
   )
 }

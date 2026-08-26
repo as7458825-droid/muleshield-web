@@ -37,13 +37,9 @@ export default function Stat({
   const v = useCountUp(value, 900, decimals)
   const shown = display ?? (decimals ? v.toFixed(decimals) : Math.round(v).toLocaleString())
   return (
-    <div className="glass glass-hover p-6">
-      <p className="text-xs font-semibold tracking-wide text-mist uppercase">{label}</p>
-      <p
-        className={`mt-2 font-display text-3xl font-bold tracking-tight ${
-          accent ? "bg-gradient-to-r from-indigo-400 to-cyan-300 bg-clip-text text-transparent" : "text-paper"
-        }`}
-      >
+    <div className="glass glass-hover p-5">
+      <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-faint">{label}</p>
+      <p className={`tick-mark mt-2 text-2xl font-semibold tracking-tight ${accent ? "text-gold" : "text-paper"}`}>
         {shown}
       </p>
     </div>

@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react"
 
 export function RiskRail({ score }: { score: number }) {
   const pct = Math.max(0, Math.min(1, score)) * 100
-  const color = score > 0.6 ? "#fb7185" : score > 0.4 ? "#fb7185" : score > 0.2 ? "#fbbf24" : "#34d399"
+  const color = score > 0.6 ? "#f0475b" : score > 0.4 ? "#f0475b" : score > 0.2 ? "#f5b93b" : "#17c67c"
   return (
     <div aria-hidden className="relative h-6 w-full">
       <div className="absolute inset-x-0 top-1/2 h-1.5 -translate-y-1/2 overflow-hidden rounded-full bg-white/[0.06]">
@@ -36,12 +36,12 @@ export function RocPrChart({ roc, pr }: { roc: { fpr: number[]; tpr: number[] };
         <svg viewBox={`0 0 ${W} ${H}`} className="w-full">
           <defs>
             <linearGradient id="rocFill" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#818cf8" stopOpacity="0.35" />
-              <stop offset="100%" stopColor="#818cf8" stopOpacity="0" />
+              <stop offset="0%" stopColor="#3d74ff" stopOpacity="0.35" />
+              <stop offset="100%" stopColor="#3d74ff" stopOpacity="0" />
             </linearGradient>
             <linearGradient id="prFill" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#22d3ee" stopOpacity="0.35" />
-              <stop offset="100%" stopColor="#22d3ee" stopOpacity="0" />
+              <stop offset="0%" stopColor="#35c4dc" stopOpacity="0.35" />
+              <stop offset="100%" stopColor="#35c4dc" stopOpacity="0" />
             </linearGradient>
           </defs>
           <rect x={pad} y={pad} width={W - 2 * pad} height={H - 2 * pad} rx="8" fill="rgba(255,255,255,0.03)" stroke="rgba(255,255,255,0.08)" />
@@ -53,7 +53,7 @@ export function RocPrChart({ roc, pr }: { roc: { fpr: number[]; tpr: number[] };
             <line key={`h${g}`} x1={pad} y1={H - pad - g * (H - 2 * pad)} x2={W - pad} y2={H - pad - g * (H - 2 * pad)} stroke="rgba(255,255,255,0.04)" />
           ))}
           <polygon points={`${pad},${H - pad} ${toPoints(roc.fpr, roc.tpr)} ${W - pad},${H - pad}`} fill="url(#rocFill)" />
-          <polyline points={toPoints(roc.fpr, roc.tpr)} fill="none" stroke="#818cf8" strokeWidth="2.6" strokeLinejoin="round" style={{ filter: "drop-shadow(0 0 6px rgba(129,140,248,0.5))" }} />
+          <polyline points={toPoints(roc.fpr, roc.tpr)} fill="none" stroke="#3d74ff" strokeWidth="2.6" strokeLinejoin="round" style={{ filter: "drop-shadow(0 0 6px rgba(61,116,255,0.55))" }} />
           <text x={pad} y={H - pad + 14} fill="#64748b" fontSize="9">0.0</text>
           <text x={W - pad - 10} y={H - pad + 14} fill="#64748b" fontSize="9">1.0</text>
           <text x={pad - 14} y={H - pad} fill="#64748b" fontSize="9">1.0</text>
@@ -71,7 +71,7 @@ export function RocPrChart({ roc, pr }: { roc: { fpr: number[]; tpr: number[] };
             <line key={`h${g}`} x1={pad} y1={H - pad - g * (H - 2 * pad)} x2={W - pad} y2={H - pad - g * (H - 2 * pad)} stroke="rgba(255,255,255,0.04)" />
           ))}
           <polygon points={`${pad},${H - pad} ${toPoints(pr.recall, pr.precision)} ${W - pad},${H - pad}`} fill="url(#prFill)" />
-          <polyline points={toPoints(pr.recall, pr.precision)} fill="none" stroke="#22d3ee" strokeWidth="2.6" strokeLinejoin="round" style={{ filter: "drop-shadow(0 0 6px rgba(34,211,238,0.5))" }} />
+          <polyline points={toPoints(pr.recall, pr.precision)} fill="none" stroke="#35c4dc" strokeWidth="2.6" strokeLinejoin="round" style={{ filter: "drop-shadow(0 0 6px rgba(53,196,220,0.55))" }} />
           <text x={W / 2 - 24} y={H - 2} fill="#64748b" fontSize="8" letterSpacing="2">RECALL →</text>
         </svg>
       </div>
@@ -224,9 +224,9 @@ export function ForceGraph({ nodes, edges }: { nodes: Node[]; edges: Edge[] }) {
   }, [])
 
   const colorFor = (n: Node) => {
-    if (n.type === "bank") return "#fbbf24"
+    if (n.type === "bank") return "#f5b93b"
     if (n.type === "branch") return "#94a3b8"
-    return (n.risk_score ?? 0) > 0.5 ? "#fb7185" : "#34d399"
+    return (n.risk_score ?? 0) > 0.5 ? "#f0475b" : "#17c67c"
   }
 
   return (
@@ -294,8 +294,8 @@ export function ScatterPlot({ points }: { points: { x: number; y: number; label:
       ))}
       {points.map((p, i) => (
         <g key={i}>
-          <circle cx={nx(p.x)} cy={ny(p.y)} r="7" fill="#22d3ee" opacity="0.12" />
-          <circle cx={nx(p.x)} cy={ny(p.y)} r="3.2" fill="#22d3ee" />
+          <circle cx={nx(p.x)} cy={ny(p.y)} r="7" fill="#35c4dc" opacity="0.12" />
+          <circle cx={nx(p.x)} cy={ny(p.y)} r="3.2" fill="#35c4dc" />
         </g>
       ))}
     </svg>

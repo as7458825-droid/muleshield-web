@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next"
-import { Inter, Space_Grotesk } from "next/font/google"
+import { Inter, IBM_Plex_Mono } from "next/font/google"
 import "./globals.css"
 
 const inter = Inter({
@@ -7,9 +7,10 @@ const inter = Inter({
   variable: "--font-inter",
 })
 
-const space = Space_Grotesk({
+const plex = IBM_Plex_Mono({
   subsets: ["latin"],
-  variable: "--font-space",
+  weight: ["400", "500", "600"],
+  variable: "--font-plex",
 })
 
 export const metadata: Metadata = {
@@ -18,12 +19,12 @@ export const metadata: Metadata = {
 }
 
 export const viewport: Viewport = {
-  themeColor: "#0b1220",
+  themeColor: "#0a0f1c",
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${inter.variable} ${space.variable}`}>
+    <html lang="en" className={`${inter.variable} ${plex.variable}`}>
       <body className="min-h-screen antialiased">{children}</body>
     </html>
   )
