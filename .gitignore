@@ -1,0 +1,24 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+
+# Big model file (149MB, exceeds GitHub limit - contrastive works without it)
+backend/models/lof.joblib
+
+# Frontend build artifacts
+frontend/node_modules/
+frontend/.next/
+frontend/out/
+
+# Env & secrets
+.env
+.env.local
+.env.production
+
+# OS / editor
+.DS_Store
+Thumbs.db
+*.log
