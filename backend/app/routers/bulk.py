@@ -2,12 +2,97 @@ import io
 
 import numpy as np
 import pandas as pd
-from fastapi import APIRouter, HTTPException, UploadFile, File
-from app.models.loader import get_models, SELECTED_FEATURES
+from fastapi import APIRouter, HTTPException, UploadFile, File, Response
+from app.models.loader import get_models, SELECTED_FEATURES, get_feature_descriptions
 
 router = APIRouter()
 
 MAX_ROWS = 10000
+
+
+def _score_level(avg: float) -> str:
+    if avg > 0.6:
+        return "Critical"
+    if avg > 0.4:
+        return "High"
+    if avg > 0.2:
+        return "Medium"
+    return "Low"
+
+
+@router.get("/template")
+def download_template():
+    """Download a template CSV with all required feature columns."""
+    # Create a template with all required features + account_number
+    template_df = pd.DataFrame(columns=["account_number"] + SELECTED_FEATURES)
+    
+    # Add one example row with zeros
+    example_row = {"account_number": "ACC-0001"}
+    example_row.update({feat: 0.0 for feat in SELECTED_FEATURES})
+    template_df = pd.concat([template_df, pd.DataFrame([example_row])], ignore_index=True)
+    
+    csv_buffer = io.StringIO()
+    template_df.to_csv(csv_buffer, index=False)
+    
+    return Response(
+        content=csv_buffer.getvalue(),
+        media_type="text/csv",
+        headers={"Content-Disposition": "attachment; filename=muleshield_template.csv"}
+    )
+
+
+@router.get("/sample")
+def download_sample():
+    """Download a sample CSV with realistic example data."""
+    # Load the real dataset to extract a few real rows
+    try:
+        from app.utils.demo_accounts import _load
+        features, X, y, demo = _load()
+        
+        # Get indices for the demo accounts
+        demo_indices = list(demo.values())
+        sample_df = pd.DataFrame(X[demo_indices], columns=features)
+        sample_df["account_number"] = [f"ACC-{i:04d}" for i in demo_indices]
+        
+        # Reorder columns: account_number first
+        cols = ["account_number"] + list(features)
+        sample_df = sample_df[cols]
+    except Exception:
+        # Fallback: create synthetic sample with zeros
+        sample_df = pd.DataFrame(columns=["account_number"] + SELECTED_FEATURES)
+        for i in range(5):
+            row = {"account_number": f"ACC-{i:04d}"}
+            row.update({feat: 0.0 for feat in SELECTED_FEATURES})
+            sample_df = pd.concat([sample_df, pd.DataFrame([row])], ignore_index=True)
+    
+    csv_buffer = io.StringIO()
+    sample_df.to_csv(csv_buffer, index=False)
+    
+    return Response(
+        content=csv_buffer.getvalue(),
+        media_type="text/csv",
+        headers={"Content-Disposition": "attachment; filename=muleshield_sample.csv"}
+    )
+
+
+@router.get("/features")
+def list_features():
+    """List all required feature columns with descriptions."""
+    try:
+        descriptions = get_feature_descriptions()
+    except:
+        descriptions = {}
+    
+    features_info = [
+        {"name": feat, "description": descriptions.get(feat, "")}
+        for feat in SELECTED_FEATURES
+    ]
+    
+    return {
+        "total_features": len(SELECTED_FEATURES),
+        "features": features_info,
+        "note": "CSV must contain all these columns (or at least a subset). Missing features will be filled with 0."
+    }
 
 
 def _score_level(avg: float) -> str:
@@ -26,6 +111,9 @@ def bulk_predict(file: UploadFile = File(...)):
 
     The CSV must contain the model's feature columns (F-prefixed names).
     An optional `account_number` column is used to label rows.
+    
+    For the correct format, download the template from GET /bulk/template
+    or see the feature list at GET /bulk/features
     """
     models = get_models()
     if not models:
@@ -42,11 +130,14 @@ def bulk_predict(file: UploadFile = File(...)):
 
     present = [c for c in SELECTED_FEATURES if c in df.columns]
     missing = [c for c in SELECTED_FEATURES if c not in df.columns]
+    
     if not present:
         raise HTTPException(
             400,
-            f"No model features found in CSV. Expected columns like {SELECTED_FEATURES[:3]}... "
-            f"(found {len(df.columns)} columns)",
+            f"CSV must contain at least some of the required {len(SELECTED_FEATURES)} feature columns (F1, F2, F3...). "
+            f"Found {len(df.columns)} columns but none match the required feature format. "
+            f"Download the template from GET /bulk/template or see required features at GET /bulk/features. "
+            f"Current columns: {list(df.columns)[:10]}{'...' if len(df.columns) > 10 else ''}"
         )
 
     if len(df) > MAX_ROWS:
@@ -95,7 +186,9 @@ def bulk_predict(file: UploadFile = File(...)):
 
     return {
         "total": len(rows),
-        "missing_features": missing,
+        "missing_features_count": len(missing),
+        "missing_features": missing[:50],  # Limit to first 50
+        "present_features_count": len(present),
         "summary": counts,
         "results": rows,
     }

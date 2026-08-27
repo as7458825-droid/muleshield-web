@@ -72,3 +72,7 @@ def validate_features(features: dict) -> np.ndarray:
     return arr
 
 FEATURE_DESC = {}
+
+def get_feature_descriptions() -> dict:
+    """Return feature descriptions if available, otherwise empty dict."""
+    return FEATURE_DESC
